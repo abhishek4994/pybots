@@ -5,6 +5,7 @@ from selenium.webdriver import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 from time import sleep
 
 option = webdriver.ChromeOptions()
@@ -27,6 +28,22 @@ class RedditHeadlinesTwitterBot:
         self.redditTrending = self.driver.find_element(By.CLASS_NAME, value="_2Jjv0TAohMSydVpAgyhjhA").text
         print(self.redditTrending)
 
+    def paraphrase_in_quillbot(self):
+        self.driver.get("https://quillbot.com/")
+        sleep(8)
+        quillbot_input = self.driver.find_element(By.XPATH,'//*[@id="inputText"]')
+        quillbot_input.send_keys(self.redditTrending)
+        #quillbot_input.send_keys(f"On Reddit Today- {self.redditTrending}")
+        sleep(3)
+        paraphrase = self.driver.find_element(By.XPATH, '//*[@id="InputBottomQuillControl"]/div/div/div/div[2]/div/div/div/div/button')
+        paraphrase.click()
+        time.sleep(5)
+        self.paraphrasedTweet = self.driver.find_element(By.XPATH,'//*[@id="editable-content-within-article"]').text
+        print(self.paraphrasedTweet)
+        time.sleep(2)
+        print("Quillbot Done")
+
+
     def tweet(self):
         self.driver.get("https://twitter.com/home")
         sleep(10)
@@ -48,10 +65,10 @@ class RedditHeadlinesTwitterBot:
             pass_input.send_keys(TWITTER_PASSWORD)
             pass_input.send_keys(Keys.ENTER)
 
-        sleep(5)
-
+        sleep(10)
         input = self.driver.find_element(By.CSS_SELECTOR, 'br[data-text="true"]')
-        input.send_keys(f"On Reddit Today- {self.redditTrending}")
+        #ActionChains(driver).move_to_element(input).send_keys(f"On Reddit Today- {self.paraphrasedTweet}")
+        input.send_keys(f"On Reddit Today- {self.paraphrasedTweet}")
         sleep(3)
         tweet = self.driver.find_element(By.XPATH, "//*[@id='react-root']/div/div/div[2]/main/div/div/div/div[1]/div/div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[3]/div/div/div[2]/div[3]/div/span/span")
         tweet.click()
@@ -62,4 +79,5 @@ class RedditHeadlinesTwitterBot:
 
 bot = RedditHeadlinesTwitterBot()
 bot.get_reddit_headline()
+bot.paraphrase_in_quillbot()
 bot.tweet()
