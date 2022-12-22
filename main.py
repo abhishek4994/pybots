@@ -14,7 +14,7 @@ service = ChromeService("C:\Development\chromedriver.exe")
 driver = webdriver.Chrome(service=service, options=option)
 
 TWITTER_ID = "LeviLovesTech"
-TWITTER_PASSWORD = "Levi@4994"
+TWITTER_PASSWORD = "*********"
 
 
 class RedditHeadlinesTwitterBot:
